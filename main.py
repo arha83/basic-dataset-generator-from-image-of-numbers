@@ -1,26 +1,23 @@
 import cv2 as cv
 import numpy as np
 
-def stackImages(columns, rows, *images):
-    imageIndex= 0
-    horizontals= []
-    for j in range(columns):
-        blocks=[]
-        for i in range(rows):
-            blocks.append(images[imageIndex])
-            imageIndex += 1
-        horizontals.append(np.hstack(blocks))
-    canvas= np.vstack(horizontals)
-    return canvas
-
     
 
 baseImage= cv.imread('./numbers.png')
+baseImage= cv.copyMakeBorder(baseImage, 20,20,20,20, cv.BORDER_CONSTANT, value=(255,255,255))
+baseImage_color= np.copy(baseImage)
 baseImage= cv.cvtColor(baseImage, cv.COLOR_BGR2GRAY)
 invert= cv.bitwise_not(baseImage)
-blur= cv.GaussianBlur(baseImage, (15,15), 0)
-_, thresh= cv.threshold(blur, 230, 255, cv.THRESH_BINARY)
+_, thresh= cv.threshold(baseImage, 127, 255, cv.THRESH_BINARY)
+contours_all, hierarchies= cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+contours= []
+for index, contour in enumerate(contours_all):
+    hierarchy= hierarchies[0][index]
+    if hierarchy[3] != -1 and (hierarchy[0] != -1 or hierarchy[1] != -1):
+        contours.append(contour)
 
-win= stackImages(2, 2, baseImage, invert, blur, thresh)
-cv.imshow('images', win)
+
+cv.drawContours(baseImage_color, contours_all, -1, (0,255,0), 1)
+cv.drawContours(baseImage_color, contours, -1, (0,0,255), 1)
+cv.imshow('images', baseImage_color)
 cv.waitKey(0)
