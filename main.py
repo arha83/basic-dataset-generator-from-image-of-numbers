@@ -37,9 +37,22 @@ for contour in contours:
     cv.rectangle(baseImage_color, (x,y), (x+w,y+h), (255,0,0), 1)
 
 rectangles= sortRectangles(rectangles_shuffled)
+
+imagesList= []
+labelsList= []
+for index, rectangle in enumerate(rectangles):
+    (x, y, w, h) = rectangle
+    num= invert[y:y+h,x:x+w]
+    num= cv.copyMakeBorder(num, 10,10,10,10, cv.BORDER_CONSTANT, value=(0,0,0))
+    num= cv.resize(num, (32,32))
+    imagesList.append(num)
+    labelsList.append(index % 10)
+images= np.array(imagesList)
+labels= np.array(labelsList)
+
+
 for index, rectangle in enumerate(rectangles):
     cv.putText(baseImage_color, str(index), (rectangle[0],rectangle[1]), cv.FONT_HERSHEY_SIMPLEX, 0.35, (255,0,0))
-
 cv.drawContours(baseImage_color, contours_all, -1, (0,255,0), 1)
 cv.drawContours(baseImage_color, contours, -1, (0,0,255), 1)
 cv.imshow('images', baseImage_color)
