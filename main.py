@@ -50,6 +50,8 @@ for index, rectangle in enumerate(rectangles):
 images= np.array(imagesList)
 labels= np.array(labelsList)
 
+np.save('./dataset.npy', images)
+np.save('./labels.npy', labels)
 
 for index, rectangle in enumerate(rectangles):
     cv.putText(baseImage_color, str(index), (rectangle[0],rectangle[1]), cv.FONT_HERSHEY_SIMPLEX, 0.35, (255,0,0))
